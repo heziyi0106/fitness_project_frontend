@@ -1,3 +1,5 @@
+# fitness_project_frontend
+This is frontend code of fitness_project.
 # frontend
 
 ## Project setup
