@@ -22,7 +22,7 @@
 
             <!-- 運動類型 -->
             <div class="form-group">
-                <label for="type">運動類型:</label>
+                <label for="type">運動類型(可複選):</label>
                 <select id="type" v-model="plan.exercise_types" class="form-control" multiple required>
                     <option v-for="type in exerciseTypes" :key="type.id" :value="type.id">{{ type.name }}</option>
                 </select>
@@ -31,7 +31,7 @@
             <!-- 運動時間 -->
             <div class="form-group">
                 <label for="duration">運動時間 (分鐘):</label>
-                <input type="number" id="duration" v-model="plan.total_duration" class="form-control" required />
+                <input type="number" id="duration" v-model="plan.total_duration" class="form-control" step="5" min="0" required />
             </div>
 
             <!-- 動作組設置 -->
@@ -58,21 +58,21 @@
                 </select>
 
                 <label for="sets">組數:</label>
-                <input type="number" v-model="exerciseSet.sets" class="form-control" required />
+                <input type="number" v-model="exerciseSet.sets" class="form-control" min="0" required />
 
                 <h5>每組詳細設定</h5>
                 <div v-for="(detail, detailIndex) in exerciseSet.details" :key="detailIndex" class="detail-set">
                     <label for="reps">反覆次數:</label>
-                    <input type="number" v-model="detail.reps" class="form-control" required />
+                    <input type="number" v-model="detail.reps" class="form-control" min="0" required />
 
                     <label for="weight">訓練重量 (kg):</label>
-                    <input type="number" v-model="detail.weight" class="form-control" required />
+                    <input type="number" v-model="detail.weight" class="form-control" min="0" required />
 
                     <label for="actual_duration">實際訓練時間 (秒):</label>
-                    <input type="number" v-model="detail.actual_duration" class="form-control" required />
+                    <input type="number" v-model="detail.actual_duration" class="form-control" step="10" min="0" required />
 
                     <label for="rest_time">休息時間 (秒):</label>
-                    <input type="number" v-model="detail.rest_time" class="form-control" required />
+                    <input type="number" v-model="detail.rest_time" class="form-control" step="10" min="0" required />
                 </div>
 
                 <!-- 新增一組詳細設定 -->

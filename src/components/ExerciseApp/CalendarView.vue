@@ -4,6 +4,7 @@
         
         <!-- Vue Cal 日曆 -->
         <vue-cal
+            ref="vueCal"
             style="height: 600px"
             :events="events"
             @cell-click="onDateClick"
@@ -17,7 +18,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">{{ selectedDate }} 的運動計劃</h5>
+                        <h5 class="modal-title">我的運動計劃</h5>
                         <button type="button" class="close" @click="closeModal">&times;</button>
                     </div>
                     <div class="modal-body">
@@ -76,7 +77,7 @@ export default {
     methods: {
         // 點擊日期時觸發
         onDateClick(event) {
-            this.selectedDate = event.date;
+            // this.selectedDate = event.date;
             this.selectedDatePlan = this.events.find(e => e.start === event.date) || null;
             this.showModal = true;  // 顯示彈出框
             document.body.style.overflow = 'hidden';
@@ -88,7 +89,7 @@ export default {
         addNewPlan(newPlan) {
             // 新增計劃，將新計劃加入到該日期中
             const newEvent = {
-                start: this.selectedDate,
+                // start: this.selectedDate,
                 title: `${newPlan.name} ${newPlan.total_duration} 分鐘`
             };
             this.events.push(newEvent);
