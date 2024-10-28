@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomePage from '@/components/Home.vue';
 import AboutPage from '@/components/About.vue';
-import ExercisePage from '@/components/ExerciseApp/Exercise.vue';
+import ExerciseDashboard from '@/components/ExerciseApp/ExerciseDashboard.vue';
+import CalendarTest from '@/components/ExerciseApp/CalendarView.vue';
 
 const routes = [
     {
@@ -15,10 +16,15 @@ const routes = [
         component: AboutPage
     },
     {
-        path: '/exercise',
-        name: 'Exercise',
-        component: ExercisePage
-    }
+        path: '/exercises',
+        name: 'ExerciseDashboard',
+        component: ExerciseDashboard
+    },
+    {
+        path: '/calendar',
+        name: 'CalendarTest',
+        component: CalendarTest
+    },
 ];
 
 const router = createRouter({

@@ -18,6 +18,9 @@
 							<li class="nav-item">
 								<router-link class="nav-link" to="/exercises">運動列表</router-link>  <!-- 新增路徑 -->
 							</li>
+							<li class="nav-item">
+								<router-link class="nav-link" to="/calendar">日曆測試</router-link>  <!-- 新增路徑 -->
+							</li>
 						</ul>
 					</div>
 				</div>
