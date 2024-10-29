@@ -2,7 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router';
 import HomePage from '@/components/Home.vue';
 import AboutPage from '@/components/About.vue';
 import ExerciseDashboard from '@/components/ExerciseApp/ExerciseDashboard.vue';
-import CalendarTest from '@/components/ExerciseApp/CalendarView.vue';
+import LoginPage from '@/components/AccountsApp/LoginPage.vue';
+import RegisterPage from '@/components/AccountsApp/RegisterPage.vue';
+// import CalendarTest from '@/components/ExerciseApp/CalendarView.vue';
 
 const routes = [
     {
@@ -21,10 +23,20 @@ const routes = [
         component: ExerciseDashboard
     },
     {
-        path: '/calendar',
-        name: 'CalendarTest',
-        component: CalendarTest
+        path: '/login',
+        name: 'LoginPage',
+        component: LoginPage
     },
+    {
+        path: '/register',
+        name: 'RegisterPage',
+        component: RegisterPage
+    },
+    // {
+    //     path: '/calendar',
+    //     name: 'CalendarTest',
+    //     component: CalendarTest
+    // },
 ];
 
 const router = createRouter({
