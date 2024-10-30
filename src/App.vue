@@ -76,23 +76,29 @@ export default {
                 const expirationTime = localStorage.getItem('tokenExpirationTime');
                 const now = Date.now();
                 if (expirationTime && now >= expirationTime) {
-                    localStorage.removeItem('authToken');
-                    localStorage.removeItem('tokenExpirationTime');
-                    this.authToken = null;
-                    this.tokenRemainingTime = 0;
-
-                    // 如果不是用户手动登出，才延遲弹出 token 过期提示
-					if (!this.isUserLoggedOut) {
-						setTimeout(() => {
-							alert("您的 Token 已過期，請重新登錄");
-						}, 200);  // 延遲 0.2 秒后顯示
-					}
-                    this.$router.push('/login');
+                    this.handleTokenExpiration();
                 } else {
                     // 更新 token 剩餘時間
                     this.updateTokenRemainingTime();
                 }
             }, 1000);  // 每秒檢查一次
+        },
+        // 處理 Token 過期邏輯
+        handleTokenExpiration() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('tokenExpirationTime');
+            this.authToken = null;
+            this.tokenRemainingTime = 0;
+
+            // 如果不是用户手动登出，才延遲彈出 token 过期提示
+            if (!this.isUserLoggedOut) {
+                // 在 logout 之前弹出提示框
+                setTimeout(() => {
+                    alert("您的 Token 已過期，請重新登錄");
+                }, 150);  // 延遲 0.2 秒後顯示
+            }
+
+            this.$router.push('/login');  // Token 過期後跳轉到登入頁面
         },
         // 更新 Token 剩餘時間
         updateTokenRemainingTime() {
@@ -101,9 +107,9 @@ export default {
             const remainingTime = expirationTime - now;
             this.tokenRemainingTime = remainingTime > 0 ? Math.floor(remainingTime / 1000) : 0;
 
-            // 如果剩餘時間等於 0，立即跳轉到登入頁面
+            // 如果剩餘時間等於 0，立即處理 Token 過期
             if (this.tokenRemainingTime === 0 && this.authToken) {
-                this.logout();  // Token 已過期，立即登出
+                this.handleTokenExpiration();
             }
         },
         // 更新 Token
