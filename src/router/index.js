@@ -4,7 +4,7 @@ import AboutPage from '@/components/About.vue';
 import ExerciseDashboard from '@/components/ExerciseApp/ExerciseDashboard.vue';
 import LoginPage from '@/components/AccountsApp/LoginPage.vue';
 import RegisterPage from '@/components/AccountsApp/RegisterPage.vue';
-// import CalendarTest from '@/components/ExerciseApp/CalendarView.vue';
+import LogoutPage from '@/components/AccountsApp/LogoutPage.vue';
 
 const routes = [
     {
@@ -32,11 +32,11 @@ const routes = [
         name: 'RegisterPage',
         component: RegisterPage
     },
-    // {
-    //     path: '/calendar',
-    //     name: 'CalendarTest',
-    //     component: CalendarTest
-    // },
+    {
+        path: '/logout',
+        name: 'LogoutPage',
+        component: LogoutPage
+    },
 ];
 
 const router = createRouter({

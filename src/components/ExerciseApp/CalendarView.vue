@@ -24,10 +24,7 @@
                     <div class="modal-body">
                         <div v-if="selectedDatePlan">
                             <!-- 已有運動計劃 -->
-                            <h6>計劃名稱: {{ selectedDatePlan.name }}</h6>
-                            <p>目標: {{ selectedDatePlan.goal }}</p>
-                            <p>總運動時間: {{ selectedDatePlan.total_duration }} 分鐘</p>
-                            <p>類型: {{ selectedDatePlan.exercise_type }}</p>
+                            <h6>計劃名稱: {{ selectedDatePlan.title }}</h6>
                         </div>
                         <div v-else>
                             <!-- 尚無運動計劃，顯示新增計劃表單 -->
@@ -54,42 +51,50 @@ export default {
         VueCal,
         NewExercisePlan,
     },
+    props: {
+        monthlyPlans: {
+            type: Array,
+            required: true
+        }
+    },
     data() {
         return {
-            selectedDate: null, // 被選擇的日期
-            selectedDatePlan: null, // 該日期的運動計劃
-            showModal: false, // 控制彈出框顯示
-            events: [
-                {
-                    start: '2024-10-28',
-                    end: '2024-10-28',
-                    title: '力量訓練 60 分鐘'
-                },
-                {
-                    start: '2024-10-29',
-                    end: '2024-10-29',
-                    title: '有氧運動 45 分鐘'
-                }
-            ],
-            selectedEvent: null
+            selectedDate: null,       // 當前選擇的日期
+            selectedDatePlan: null,   // 當前選擇的日期的運動計劃
+            showModal: false,         // 控制彈出框顯示
+            events: this.convertPlansToEvents(this.monthlyPlans)  // 初始載入的事件
         };
     },
+    watch: {
+        monthlyPlans(newPlans) {
+            // 當 props 傳遞的 monthlyPlans 更新時，更新事件資料
+            this.events = this.convertPlansToEvents(newPlans);
+        }
+    },
     methods: {
+        // 將計劃轉換為 Vue Cal 事件格式
+        convertPlansToEvents(plans) {
+            return plans.map(plan => ({
+                start: plan.scheduled_date,
+                end: plan.scheduled_date,
+                title: `${plan.name} ${plan.total_duration} 分鐘`
+            }));
+        },
         // 點擊日期時觸發
         onDateClick(event) {
-            // this.selectedDate = event.date;
             this.selectedDatePlan = this.events.find(e => e.start === event.date) || null;
             this.showModal = true;  // 顯示彈出框
-            document.body.style.overflow = 'hidden';
+            document.body.style.overflow = 'hidden';  // 防止背景滾動
         },
         closeModal() {
-            this.showModal = false;
-            document.body.style.overflow = '';  // 恢复背景滚动
+            this.showModal = false;  // 關閉彈出框
+            document.body.style.overflow = '';  // 恢復背景滾動
         },
         addNewPlan(newPlan) {
-            // 新增計劃，將新計劃加入到該日期中
+            // 新增計劃，將新計劃加入到事件中
             const newEvent = {
-                // start: this.selectedDate,
+                start: this.selectedDate,
+                end: this.selectedDate,
                 title: `${newPlan.name} ${newPlan.total_duration} 分鐘`
             };
             this.events.push(newEvent);
@@ -115,7 +120,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1050; /* 确保层级足够高 */
+    z-index: 1050;
 }
 
 .modal-dialog {
@@ -124,11 +129,10 @@ export default {
     background-color: #fff;
     padding: 20px;
     border-radius: 5px;
-    z-index: 1060; /* 确保层级高于背景 */
-    max-height: 80vh; /* 限制模态框的高度，避免内容过长时超出 */
-    overflow-y: auto; /* 启用模态框内部滚动 */
+    z-index: 1060;
+    max-height: 80vh;
+    overflow-y: auto;
 }
-
 
 .modal-title {
     font-size: 1.5rem;
