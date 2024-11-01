@@ -40,7 +40,8 @@
 
 <script>
 import CalendarView from './CalendarView.vue';
-import axios from 'axios';
+// import axios from 'axios';
+import tokenSet from '@/api';
 
 export default {
     name: "ExerciseDashboard",
@@ -76,70 +77,35 @@ export default {
                 console.log("Monthly plans already loaded.");
             }
         },
-        fetchMonthlyPlans() {
-            const token = localStorage.getItem('authToken');
-            if (token) {
-                axios.get('http://127.0.0.1:8000/fitness_api/exercise/monthly_plans/', {
-                    headers: {
-                        Authorization: `Token ${token}`
-                    }
-                })
-                .then(response => {
-                    if (response.data && response.data.length > 0) {
-                        this.monthlyPlans = response.data;  // 保存月度運動計劃
-                    } else {
-                        console.error("無法獲取月度運動計劃");
-                    }
-                })
-                .catch(error => {
-                    console.error('無法獲取月度運動計劃數據:', error);
-                });
+        async fetchMonthlyPlans() {
+            try {
+                const response = await tokenSet.get('/fitness_api/exercise/monthly_plans/');
+                this.monthlyPlans = response.data || [];
+            } catch (error) {
+                console.error('無法獲取月度運動計劃數據:', error);
             }
         },
-        fetchWeeklyPlans() {
-            const token = localStorage.getItem('authToken');
-            if (token) {
-                axios.get('http://127.0.0.1:8000/fitness_api/exercise/weekly_plans/', {
-                    headers: {
-                        Authorization: `Token ${token}`
-                    }
-                })
-                .then(response => {                    
-                    if (response.data && Object.keys(response.data).length > 0) {
-                        this.weeklyPlans = response.data;
-                    } else {
-                        this.weeklyPlansMessage = "本週沒有計畫";  // 如果數據為空，顯示提示
-                    }
-                })
-                .catch(error => {
-                    console.error('無法獲取本週運動計劃數據:', error);
-                });
-            } else {
-                console.error('Token 不存在，請先登錄');
+        async fetchWeeklyPlans() {
+            try {
+                const response = await tokenSet.get('/fitness_api/exercise/weekly_plans/');
+                this.weeklyPlans = response.data || [];
+                if (Object.keys(this.weeklyPlans).length === 0) {
+                    this.weeklyPlansMessage = '本週沒有運動計劃';
+                }
+            } catch (error) {
+                console.error('無法獲取本週運動計劃數據:', error);
             }
         },
-        fetchBodyStatus() {
-            const token = localStorage.getItem('authToken');
-            if (token) {
-                axios.get('http://127.0.0.1:8000/fitness_api/exercise/body_composition/', {
-                    headers: {
-                        Authorization: `Token ${token}`
-                    }
-                })
-                .then(response => {
-                    if (response.data && Object.keys(response.data).length > 0) {
-                        this.bodyStatus = response.data;
-                    } else {
-                        this.bodyStatusMessage = "沒有數據";
-                    }
-                })
-                .catch(error => {
-                    console.error('無法獲取身體狀態數據:', error);
-                    this.bodyStatusMessage = "無法獲取身體測量數據";
-                });
-            } else {
-                console.error('Token 不存在，請先登錄');
-                this.bodyStatusMessage = "請先登錄以查看身體測量數據";
+        async fetchBodyStatus() {
+            try {
+                const response = await tokenSet.get('/fitness_api/exercise/body_composition/');
+                this.bodyStatus = response.data || {};
+                if (Object.keys(this.bodyStatus).length === 0) {
+                    this.bodyStatusMessage = '沒有數據';
+                }
+            } catch (error) {
+                console.error('無法獲取身體狀態數據:', error);
+                this.bodyStatusMessage = "無法獲取身體測量數據";
             }
         },
     }

@@ -18,7 +18,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">{{ selectDateTitle }} 運動計劃</h5>
+                        <h5 class="modal-title">{{ selectDateTitle }} 的運動計劃</h5>
                         <button type="button" class="close" @click="closeModal">&times;</button>
                     </div>
                     <div class="modal-body">
@@ -46,6 +46,7 @@
                         <!-- 新增運動計劃的表單（根據 isAddingNewPlan 控制顯示） -->
                         <new-exercise-plan
                             v-if="isAddingNewPlan"
+                            :selected-date="selectedDate"
                             @submitPlan="addNewPlan"
                             @cancelPlan="closeNewPlan"
                         />
@@ -63,6 +64,7 @@
 import VueCal from 'vue-cal';  // 引入 Vue Cal 元件
 import 'vue-cal/dist/vuecal.css';  // 引入樣式
 import NewExercisePlan from './NewExercisePlan.vue';  // 引入新建計劃的表單元件
+import dayjs from 'dayjs';  // 引入 dayjs 以确保日期格式一致
 
 export default {
     name: 'CalendarView',
@@ -78,7 +80,7 @@ export default {
     },
     data() {
         return {
-            selectDateTitle: null,
+            selectDateTitle: null,     // 當前選擇的日期標題
             selectedDate: null,        // 當前選擇的日期
             selectedDatePlan: null,    // 當前選擇的日期的運動計劃
             showModal: false,          // 控制彈出框顯示
@@ -94,13 +96,13 @@ export default {
         }
     },
     methods: {
-        // 將計劃轉換為 Vue Cal 事件格式
+        // 將計劃轉換為 Vue Cal 事件格式，並格式化 start 為 YYYY-MM-DD
         convertPlansToEvents(plans) {
             return plans.map(plan => ({
-                start: plan.scheduled_date,
-                end: plan.scheduled_date,
+                start: dayjs(plan.scheduled_date).format('YYYY-MM-DD'), // 確保日期格式一致
+                end: dayjs(plan.scheduled_date).format('YYYY-MM-DD'),
                 title: `${plan.name} ${plan.total_duration} 分鐘`,
-                name: plan.name, // 額外存儲數據以便顯示
+                name: plan.name,
                 goal: plan.goal,
                 total_duration: plan.total_duration,
                 exercise_type: plan.exercise_type
@@ -108,18 +110,12 @@ export default {
         },
         // 點擊日期時觸發
         onDateClick(event) {
-            this.selectedDate = event;            
-            // 格式化日期為 YYYY/MM/DD
-            const year = this.selectedDate.getFullYear();
-            const month = (this.selectedDate.getMonth() + 1).toString().padStart(2, '0');  // 月份從0開始，所以要+1
-            const day = this.selectedDate.getDate().toString().padStart(2, '0');
-            this.selectDateTitle = `${year}/${month}/${day}`;
+            this.selectedDate = dayjs(event).format('YYYY-MM-DD');  // 使用 dayjs 確保格式為 YYYY-MM-DD
+            this.selectDateTitle = dayjs(event).format('YYYY/MM/DD'); // 顯示格式為 YYYY/MM/DD
 
-            // 格式化日期为 YYYY-MM-DD
-            const formattedDate = this.selectedDate.toISOString().split('T')[0];
-
-            this.selectedDate = formattedDate
+            // 查找選擇日期的運動計劃
             this.selectedDatePlan = this.events.find(e => e.start === this.selectedDate) || null;
+
             this.showDetails = false;   // 初始化為不顯示詳細計劃
             this.isAddingNewPlan = false; // 初始化為不顯示新增計劃表單
             this.showModal = true;      // 顯示彈出框
@@ -171,6 +167,7 @@ export default {
     align-items: center;
     justify-content: center;
     z-index: 1050;
+    overflow: hidden; /* 禁用背景滾動 */
 }
 
 .modal-dialog {

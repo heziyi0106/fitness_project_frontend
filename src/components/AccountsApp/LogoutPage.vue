@@ -7,26 +7,15 @@
 </template>
 
 <script>
-import axios from 'axios';
+// import axios from 'axios';
+import tokenSet from '@/api';
 
 export default {
     methods: {
         async logout() {
             try {
-                // 獲取本地的 Token
-                const token = localStorage.getItem('authToken');
-
-                if (!token) {
-                    this.$router.push('/login');
-                    return;
-                }
-
-                // 發送登出請求到後端
-                await axios.post('http://127.0.0.1:8000/fitness_api/accounts/logout/', {}, {
-                    headers: {
-                        Authorization: `Token ${token}`
-                    }
-                });
+                // 發送有token的登出請求到後端
+                await tokenSet.post('/fitness_api/accounts/logout/');
 
                 // 調用 App.vue 中的 logout 方法來清除 Token 並更新狀態
                 this.$root.logout();  // 先呼叫全局的 logout 方法

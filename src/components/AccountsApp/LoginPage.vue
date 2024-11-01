@@ -20,7 +20,8 @@
 </template>
 
 <script>
-import axios from 'axios';
+// import axios from 'axios';
+import tokenSet from '@/api';
 
 export default {
     data() {
@@ -34,7 +35,7 @@ export default {
         async login() {
             try {
                 // 發起 POST 請求，傳遞用戶名和密碼
-                const response = await axios.post('http://127.0.0.1:8000/fitness_api/accounts/login/', {
+                const response = await tokenSet.post('/fitness_api/accounts/login/', {
                     username: this.username,
                     password: this.password,
                 });

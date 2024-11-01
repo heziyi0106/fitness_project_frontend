@@ -25,7 +25,8 @@
 </template>
 
 <script>
-import axios from 'axios';
+// import axios from 'axios';
+import tokenSet from '@/api';
 
 export default {
     data() {
@@ -44,7 +45,7 @@ export default {
             }
 
             try {
-                await axios.post('http://127.0.0.1:8000/fitness_api/accounts/register/', {
+                await tokenSet.post('/fitness_api/accounts/register/', {
                     username: this.username,
                     password: this.password
                 });
