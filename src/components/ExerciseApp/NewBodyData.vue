@@ -26,20 +26,17 @@ export default {
             type: Array,
             required: true,
         },
+        initialData: {
+            type: Object,
+            required: true,
+        }
     },
     data() {
         return {
-            bodyData: this.initializeData(),
+            bodyData: { ...this.initialData }
         };
     },
     methods: {
-        initializeData() {
-            let data = {};
-            this.formFields.forEach((field) => {
-                data[field.name] = 0;
-            });
-            return data;
-        },
         submitForm() {
             this.$emit('submit-body-data', this.bodyData);
         },

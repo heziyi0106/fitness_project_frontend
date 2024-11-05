@@ -34,13 +34,14 @@
                 <p>BMI: {{ bodyStatus.bmi }}</p>
             </div>
             <p v-else class="empty-message">{{ bodyStatusMessage }}</p>
-            <button class="btn btn-info" @click="showForm = !showForm">更新身體狀態</button>
+            <button class="btn btn-info" @click="openUpdateForm">更新身體狀態</button>
         </section>
 
         <!-- 新增身體組成數據表單 -->
         <section v-if="showForm" class="body-data-form">
             <new-body-data 
                 :formFields="formFields" 
+                :initialData="bodyStatus" 
                 @submit-body-data="submitForm" 
                 @cancel-form="showForm = false" 
             />
@@ -104,6 +105,9 @@ export default {
             if (!date) return '未提供日期';
             return dayjs(date).format('YYYY/MM/DD HH:mm');
         },
+        openUpdateForm() {
+            this.showForm = true;
+        },
         async fetchMonthlyPlans() {
             try {
                 const response = await tokenSet.get('/fitness_api/exercise/monthly_plans/');
@@ -148,6 +152,7 @@ export default {
     }
 };
 </script>
+
 
 <style scoped>
 /* 整體容器樣式 */
