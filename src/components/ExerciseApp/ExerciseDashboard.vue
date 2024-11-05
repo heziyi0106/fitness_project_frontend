@@ -1,7 +1,7 @@
 <template>
     <div class="dashboard-container">
         <h1 class="text-center">運動儀表板</h1>
-        
+
         <!-- 顯示日曆的按鈕 -->
         <section class="calendar-toggle">
             <button @click="toggleCalendar" class="btn btn-primary">顯示月曆</button>
@@ -27,36 +27,65 @@
         <section class="body-status">
             <h2 class="section-title">當前身體狀態</h2>
             <div v-if="Object.keys(bodyStatus).length > 0">
-                <p v-if="bodyStatus.height">身高: {{ bodyStatus.height }} 公分</p>
-                <p v-if="bodyStatus.weight">體重: {{ bodyStatus.weight }} 公斤</p>
-                <p v-if="bodyStatus.body_fat_percentage">體脂率: {{ bodyStatus.body_fat_percentage }} %</p>
-                <p v-if="bodyStatus.bmi">身體質量指數: {{ bodyStatus.bmi }}</p>
-                <!-- 略 -->
+                <div v-for="(field, index) in formFields" :key="index">
+                    <p>{{ field.label }}: {{ bodyStatus[field.name] }} {{ field.unit }}</p>
+                </div>
+                <p>測量時間: {{ formatMeasuredAt(bodyStatus.measured_at) }}</p>
+                <p>BMI: {{ bodyStatus.bmi }}</p>
             </div>
             <p v-else class="empty-message">{{ bodyStatusMessage }}</p>
+            <button class="btn btn-info" @click="showForm = !showForm">更新身體狀態</button>
+        </section>
+
+        <!-- 新增身體組成數據表單 -->
+        <section v-if="showForm" class="body-data-form">
+            <new-body-data 
+                :formFields="formFields" 
+                @submit-body-data="submitForm" 
+                @cancel-form="showForm = false" 
+            />
         </section>
     </div>
 </template>
 
 <script>
 import CalendarView from './CalendarView.vue';
-// import axios from 'axios';
+import NewBodyData from './NewBodyData.vue';
 import tokenSet from '@/api';
+import dayjs from 'dayjs';
 
 export default {
     name: "ExerciseDashboard",
     components: {
         CalendarView,
+        NewBodyData,
     },
     data() {
         return {
-            showCalendar: false,  // 用於控制日曆顯示
-            weeklyPlans: [],     // 保存每週的運動計劃
-            weeklyPlansMessage: "加載中...",  // 初始提示
-            bodyStatus: {},      // 保存身體狀態
-            bodyStatusMessage: "加載中...",  // 初始提示
-            monthlyPlans: [],    // 保存每月的運動計劃
-            clickTimes: 0 // 用於檢查月度計劃是否已加載
+            showCalendar: false,
+            weeklyPlans: [],
+            weeklyPlansMessage: "加載中...",
+            bodyStatus: {},
+            bodyStatusMessage: "加載中...",
+            monthlyPlans: [],
+            clickTimes: 0,
+            showForm: false,
+            formFields: [
+                { name: 'height', label: '身高（公分）', type: 'number', min: 0, unit: 'cm', errorMessage: '請勿輸入負值' },
+                { name: 'weight', label: '體重（公斤）', type: 'number', min: 0, unit: 'kg', errorMessage: '請勿輸入負值' },
+                { name: 'body_fat_percentage', label: '體脂率（百分比）', type: 'number', min: 0, unit: '%', errorMessage: '請勿輸入負值' },
+                { name: 'muscle_mass', label: '肌肉量（公斤）', type: 'number', min: 0, unit: 'kg', errorMessage: '請勿輸入負值' },
+                { name: 'visceral_fat', label: '內臟脂肪等級', type: 'number', min: 0, unit: '', errorMessage: '請勿輸入負值' },
+                { name: 'basal_metabolic_rate', label: '基礎代謝率 (kcal/day)', type: 'number', min: 0, unit: 'kcal/day', errorMessage: '請勿輸入負值' },
+                { name: 'waist_circumference', label: '腰圍（公分）', type: 'number', min: 0, unit: 'cm', errorMessage: '請勿輸入負值' },
+                { name: 'hip_circumference', label: '臀圍（公分）', type: 'number', min: 0, unit: 'cm', errorMessage: '請勿輸入負值' },
+                { name: 'chest_circumference', label: '胸圍（公分）', type: 'number', min: 0, unit: 'cm', errorMessage: '請勿輸入負值' },
+                { name: 'shoulder_circumference', label: '肩圍（公分）', type: 'number', min: 0, unit: 'cm', errorMessage: '請勿輸入負值' },
+                { name: 'upper_arm_circumference', label: '上臂圍（公分）', type: 'number', min: 0, unit: 'cm', errorMessage: '請勿輸入負值' },
+                { name: 'lower_arm_circumference', label: '下臂圍（公分）', type: 'number', min: 0, unit: 'cm', errorMessage: '請勿輸入負值' },
+                { name: 'thigh_circumference', label: '大腿圍（公分）', type: 'number', min: 0, unit: 'cm', errorMessage: '請勿輸入負值' },
+                { name: 'calf_circumference', label: '小腿圍（公分）', type: 'number', min: 0, unit: 'cm', errorMessage: '請勿輸入負值' },
+            ]
         };
     },
     mounted() {
@@ -65,17 +94,15 @@ export default {
     },
     methods: {
         toggleCalendar() {
-            // 切換顯示日曆狀態
             this.showCalendar = !this.showCalendar;
-            this.clickTimes ++;
-
-            // 檢查按鈕是否打開，且尚未加載過月度計劃，則調用API加載計劃
-            if (this.showCalendar && this.clickTimes<2) {
-                console.log("Monthly plans not loaded, fetching data...");
+            this.clickTimes++;
+            if (this.showCalendar && this.clickTimes < 2) {
                 this.fetchMonthlyPlans();
-            } else if (this.showCalendar) {
-                console.log("Monthly plans already loaded.");
             }
+        },
+        formatMeasuredAt(date) {
+            if (!date) return '未提供日期';
+            return dayjs(date).format('YYYY/MM/DD HH:mm');
         },
         async fetchMonthlyPlans() {
             try {
@@ -108,6 +135,16 @@ export default {
                 this.bodyStatusMessage = "無法獲取身體測量數據";
             }
         },
+        async submitForm(newData) {
+            try {
+                const response = await tokenSet.post('/fitness_api/exercise/body_composition/', newData);
+                console.log('身體狀態更新成功:', response.data);
+                this.fetchBodyStatus();
+                this.showForm = false;
+            } catch (error) {
+                console.error('提交表單失敗:', error);
+            }
+        }
     }
 };
 </script>
