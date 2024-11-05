@@ -113,7 +113,7 @@ export default {
                         exercise_name: set.exercise_name,
                         body_part: set.body_part,
                         joint_type: set.joint_type,
-                        sets: set.sets,
+                        sets: set.details.length, // 修改這裡，sets 使用 details 的長度來確保一致
                         details: set.details.map(detail => ({
                             reps: detail.reps,
                             weight: detail.weight,
@@ -146,12 +146,16 @@ export default {
             this.plan.sets[index].details.push({
                 reps: 0, weight: 0, actual_duration: 0, rest_time: 0
             });
-        },
-        updateExerciseSet(index, { field, value }) {
-            this.plan.sets[index][field] = value;
+            // 更新 sets 數量與 details 一致
+            this.plan.sets[index].sets = this.plan.sets[index].details.length;
         },
         updateDetail(index, { index: detailIndex, field, value }) {
             this.plan.sets[index].details[detailIndex][field] = value;
+            // 更新 sets 數量與 details 一致（這在刪除 detail 時很有幫助）
+            this.plan.sets[index].sets = this.plan.sets[index].details.length;
+        },
+        updateExerciseSet(index, { field, value }) {
+            this.plan.sets[index][field] = value;
         },
         resetPlan() {
             this.plan = {
