@@ -41,6 +41,11 @@
             />
             <button @click.prevent="addExerciseSet" class="btn btn-primary">新增動作</button>
 
+            <!-- 保存為模板按鈕 -->
+            <div class="form-group mt-3">
+                <button type="button" class="btn btn-warning" @click="saveAsTemplate">保存為模板</button>
+            </div>
+
             <!-- 提交與取消 -->
             <div class="form-group mt-3">
                 <button type="submit" class="btn btn-success">保存計劃</button>
@@ -129,6 +134,34 @@ export default {
                 this.resetPlan();
             } catch (error) {
                 console.error('提交計劃失敗:', error.response ? error.response.data : error);
+            }
+        },
+        async saveAsTemplate() {
+            try {
+                const formattedTemplate = {
+                    name: this.plan.name,
+                    goal: this.plan.goal,
+                    exercise_type: this.plan.exercise_type.map(Number),
+                    total_duration: this.plan.total_duration,
+                    sets: this.plan.sets.map(set => ({
+                        exercise_name: set.exercise_name,
+                        body_part: set.body_part,
+                        joint_type: set.joint_type,
+                        sets: set.details.length,
+                        details: set.details.map(detail => ({
+                            reps: detail.reps,
+                            weight: detail.weight,
+                            actual_duration: detail.actual_duration,
+                            rest_time: detail.rest_time
+                        }))
+                    }))
+                };
+
+                const response = await tokenSet.post('/fitness_api/exercise/templates/', formattedTemplate);
+                console.log('模板保存成功:', response.data);
+                alert('模板保存成功！');
+            } catch (error) {
+                console.error('保存模板失敗:', error.response ? error.response.data : error);
             }
         },
         addExerciseSet() {

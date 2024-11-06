@@ -100,7 +100,7 @@ export default {
             return plans.map(plan => ({
                 start: dayjs(plan.scheduled_date).format('YYYY-MM-DD'),
                 end: dayjs(plan.scheduled_date).format('YYYY-MM-DD'),
-                title: `${plan.name} ${plan.total_duration} 分鐘`,
+                title: `${plan.name ? plan.name + '<br>' : ''}${plan.total_duration || 0} 分鐘`,
                 name: plan.name,
                 goal: plan.goal,
                 total_duration: plan.total_duration,
