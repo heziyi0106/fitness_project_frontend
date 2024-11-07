@@ -28,6 +28,9 @@
                             <li v-if="authToken" class="nav-item">
                                 <router-link class="nav-link" to="/exercises">運動儀表板</router-link>
                             </li>
+                            <li v-if="authToken" class="nav-item">
+                                <router-link class="nav-link" to="/editor">編輯文章</router-link>
+                            </li>
                             <li v-if="isAuthenticated">
                                 Token 剩餘時間: {{ tokenRemainingTime }} 秒
                             </li>

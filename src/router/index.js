@@ -5,6 +5,7 @@ import ExerciseDashboard from '@/components/ExerciseApp/ExerciseDashboard.vue';
 import LoginPage from '@/components/AccountsApp/LoginPage.vue';
 import RegisterPage from '@/components/AccountsApp/RegisterPage.vue';
 import LogoutPage from '@/components/AccountsApp/LogoutPage.vue';
+import WorkoutJournalEditor from '@/components/WorkoutJournalApp/WorkoutJournalEditor.vue';
 
 const routes = [
     {
@@ -36,6 +37,11 @@ const routes = [
         path: '/logout',
         name: 'LogoutPage',
         component: LogoutPage
+    },
+    {
+        path: '/editor',
+        name: 'WorkoutJournalEditor',
+        component: WorkoutJournalEditor
     },
 ];
 
